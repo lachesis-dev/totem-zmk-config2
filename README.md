@@ -43,8 +43,42 @@ Function keys, Bluetooth device switching, and ZMK Studio unlock.
 3. Modify `config/totem.keymap` as needed
 4. Push changes to trigger automatic firmware build
 5. Download firmware from Actions artifacts
-6. Flash `totem_left-seeeduino_xiao_ble-zmk.uf2` to left half
-7. Flash `totem_right-seeeduino_xiao_ble-zmk.uf2` to right half
+6. Flash the halves — see [Flashing & Re-pairing the Split Halves](#flashing--re-pairing-the-split-halves) (**order matters**)
+
+## Flashing & Re-pairing the Split Halves
+
+> [!IMPORTANT]
+> **Reset BOTH halves *before* flashing EITHER half.**
+> If you reset-and-flash one half at a time (reset left → flash left → reset right →
+> flash right), the left half bonds to the right half's *old* identity and then can't
+> re-bond once the right is reset. The halves then silently fail to connect, and only
+> the left half types.
+
+All `.uf2` files must come from the **same** GitHub Actions run.
+
+### Re-pairing the halves (first-time setup, or after any firmware/BLE change)
+
+Do these in this exact order:
+
+1. **Reset BOTH halves first** — put each into bootloader (double-tap reset) and copy:
+   - `settings_reset-xiao_ble_nrf52840_zmk.uf2` → **left**
+   - `settings_reset-xiao_ble_nrf52840_zmk.uf2` → **right**
+2. **Then flash the keyboard firmware** (matching halves):
+   - `totem_left-xiao_ble_nrf52840_zmk.uf2` → **left**
+   - `totem_right-xiao_ble_nrf52840_zmk.uf2` → **right**
+3. **Power both halves on at the same time** so the left (central) discovers and bonds
+   to the right (peripheral) cleanly.
+
+### Routine keymap update (no re-pairing needed)
+
+If you only changed the keymap, skip the reset and just flash both halves with the new
+`totem_left` / `totem_right` files.
+
+> [!NOTE]
+> The **left half is the central** — it talks to the computer and types over USB/BLE.
+> The **right half is the peripheral** — it relays its keys to the left over BLE and
+> **never types over its own USB connection**. Test the right half by pressing its keys
+> while the left half is connected to the computer.
 
 ## Hardware
 
@@ -77,11 +111,12 @@ To change the Bluetooth device name:
 
 2. Build the firmware (GitHub Actions will create 3 files including `settings_reset`)
 
-3. Flash the firmware:
-   - Flash `settings_reset-seeeduino_xiao_ble-zmk.uf2` to both halves 
-   - Flash `totem_left-seeeduino_xiao_ble-zmk.uf2` to left half
-   - Flash `totem_right-seeeduino_xiao_ble-zmk.uf2` to right half
+3. Flash the firmware — **reset both halves before flashing either**
+   (see [Flashing & Re-pairing the Split Halves](#flashing--re-pairing-the-split-halves)):
+   - `settings_reset-xiao_ble_nrf52840_zmk.uf2` → **both** halves first
+   - `totem_left-xiao_ble_nrf52840_zmk.uf2` → left half
+   - `totem_right-xiao_ble_nrf52840_zmk.uf2` → right half
 
-4. Clear Bluetooth bonds on the keyboard using `BT_CLR_ALL`
+4. Clear the host Bluetooth bond with `&bt BT_CLR_ALL`
 
 Note: The settings reset is required because the keyboard name is stored in persistent memory.
