@@ -1,17 +1,14 @@
 manifest:
+  defaults:
+    revision: main
   remotes:
     - name: zmkfirmware
       url-base: https://github.com/zmkfirmware
-    - name: bigwhale
-      url-base: https://github.com/BigWhale
     # Additional modules containing boards/shields/custom code can be listed here as well
     # See https://docs.zephyrproject.org/3.2.0/develop/west/manifest.html#projects
   projects:
     - name: zmk
-      remote: bigwhale
-      # Unmerged fix for #3207 (deep-sleep wake on Zephyr 4.1 split central).
-      # Revert to remote: zmkfirmware / revision: main once it lands in v0.4.0.
-      revision: f1862b7cc726226f81e7309bf22f23b16c24297a
+      remote: zmkfirmware
       import: app/west.yml
   self:
     path: config

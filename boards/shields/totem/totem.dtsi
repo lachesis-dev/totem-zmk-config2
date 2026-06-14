@@ -36,14 +36,6 @@
             , <&xiao_d 3 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
             ;
     };
-
-    /* Designate kscan as the deep-sleep wake source. Required by the #3207
-     * wake-from-sleep fix (mirrors the node the fix added to Lily58 overlays). */
-    soft_off_wakers {
-        compatible = "zmk,soft-off-wakeup-sources";
-        status = "okay";
-        wakeup-sources = <&kscan0>;
-    };
     
      totem_physical_layout: totem_physical_layout {
         compatible = "zmk,physical-layout";
